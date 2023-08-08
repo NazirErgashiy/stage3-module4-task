@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="RepoTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-08-07T17:43:58" hostname="NAZIGYGABYTE" time="0.345">
+  <properties/>
+  <testcase name="testRepo()" classname="RepoTest" time="0.345"/>
+  <system-out><![CDATA[[]
+]]></system-out>
+  <system-err><![CDATA[авг. 07, 2023 10:43:56 PM org.hibernate.Version logVersion
+INFO: HHH000412: Hibernate ORM core version 5.6.15.Final
+авг. 07, 2023 10:43:56 PM org.hibernate.annotations.common.reflection.java.JavaReflectionManager <clinit>
+INFO: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+авг. 07, 2023 10:43:56 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl configure
+WARN: HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+авг. 07, 2023 10:43:57 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl buildCreator
+INFO: HHH10001005: using driver [org.postgresql.Driver] at URL [jdbc:postgresql://localhost:5432/postgres]
+авг. 07, 2023 10:43:57 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl buildCreator
+INFO: HHH10001001: Connection properties: {password=****, user=postgres}
+авг. 07, 2023 10:43:57 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl buildCreator
+INFO: HHH10001003: Autocommit mode: false
+авг. 07, 2023 10:43:57 PM org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl$PooledConnections <init>
+INFO: HHH000115: Hibernate connection pool size: 20 (min=1)
+авг. 07, 2023 10:43:57 PM org.hibernate.dialect.Dialect <init>
+INFO: HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL10Dialect
+авг. 07, 2023 10:43:58 PM org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl getIsolatedConnection
+INFO: HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@606c2e4b] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+]]></system-err>
+</testsuite>
