@@ -26,18 +26,15 @@ subprojects {
 
         implementation "org.springframework:spring-context:$springVersion"
 
-        implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
-        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.3'
-        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
         compileOnly 'org.projectlombok:lombok:1.18.26'
         annotationProcessor 'org.projectlombok:lombok:1.18.26'
         implementation group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
 
         testImplementation "org.springframework:spring-test:$springVersion"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
-        //testImplementation "com.tngtech.archunit:archunit:$archUnitVersion"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:$jupiterVersion"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$jupiterVersion"
+        testImplementation "com.tngtech.archunit:archunit-junit5:$archUnitVersion"
+        testImplementation "com.tngtech.archunit:archunit:$archUnitVersion"
 
         annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
         implementation "org.mapstruct:mapstruct:$mapstructVersion"
@@ -45,9 +42,8 @@ subprojects {
         implementation group: 'org.springframework', name: 'spring-tx', version: '5.3.18'
         implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.18'
         implementation group: 'org.springframework', name: 'spring-orm', version: '5.3.18'
-        testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
-        testImplementation group: 'com.tngtech.archunit', name: 'archunit-junit', version: '0.8.3'
-        implementation group: 'com.tngtech.archunit', name: 'archunit', version: '1.0.1'
+        //testImplementation group: 'com.tngtech.archunit', name: 'archunit-junit', version: '0.8.3'
+        testImplementation 'org.assertj:assertj-core:3.24.2'
     }
     test {
         useJUnitPlatform()
