@@ -42,6 +42,8 @@ subprojects {
         annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
         implementation "org.mapstruct:mapstruct:$mapstructVersion"
 
+        implementation group: 'org.springframework', name: 'spring-tx', version: '5.3.18'
+
     }
     test {
         useJUnitPlatform()
