@@ -7,10 +7,12 @@ import com.mjc.school.service.impl.AuthorService;
 import com.mjc.school.service.requests.AuthorRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
 @Component
+@Controller
 public class AuthorController implements BaseController<AuthorControllerRequest, AuthorDto, Long> {
 
 

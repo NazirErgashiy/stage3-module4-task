@@ -7,10 +7,12 @@ import com.mjc.school.service.impl.TagService;
 import com.mjc.school.service.requests.TagRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
 @Component
+@Controller
 public class TagController implements BaseController<TagControllerRequest, TagDto, Long> {
 
     @Autowired

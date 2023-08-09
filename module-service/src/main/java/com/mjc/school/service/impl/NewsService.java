@@ -11,11 +11,13 @@ import com.mjc.school.service.mapper.NewsMapperImpl;
 import com.mjc.school.service.requests.NewsRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Service
 public class NewsService implements BaseService<NewsRequest, NewsDto, Long> {
 
     @Autowired

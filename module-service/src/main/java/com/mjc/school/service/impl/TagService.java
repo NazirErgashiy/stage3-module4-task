@@ -9,10 +9,12 @@ import com.mjc.school.service.mapper.TagMapperImpl;
 import com.mjc.school.service.requests.TagRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Component
+@Service
 public class TagService implements BaseService<TagRequest, TagDto, Long> {
 
     @Autowired

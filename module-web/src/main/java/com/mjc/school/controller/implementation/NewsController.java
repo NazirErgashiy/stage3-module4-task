@@ -9,10 +9,12 @@ import com.mjc.school.service.impl.NewsService;
 import com.mjc.school.service.requests.NewsRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
 @Component
+@Controller
 public class NewsController implements BaseController<NewsControllerRequest, NewsDto, Long> {
 
     @Autowired

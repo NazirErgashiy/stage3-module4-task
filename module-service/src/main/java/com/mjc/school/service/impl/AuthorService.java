@@ -9,10 +9,12 @@ import com.mjc.school.service.mapper.AuthorMapperImpl;
 import com.mjc.school.service.requests.AuthorRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Component
+@Service
 public class AuthorService implements BaseService<AuthorRequest, AuthorDto, Long> {
 
     @Autowired

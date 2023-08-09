@@ -7,9 +7,11 @@ import com.mjc.school.controller.implementation.AuthorController;
 import com.mjc.school.controller.implementation.NewsController;
 import com.mjc.school.controller.implementation.TagController;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.util.*;
 
+@ComponentScan
 public class Main {
 
     public static void main(String[] args) {
