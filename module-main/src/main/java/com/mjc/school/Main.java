@@ -25,7 +25,6 @@ public class Main {
         //tagController.createTestDataBase();
         //newsController.createTestDataBase();
 
-
         boolean exit = false;
         Scanner reader = new Scanner(System.in);
 

@@ -44,6 +44,7 @@ subprojects {
         implementation group: 'org.springframework', name: 'spring-orm', version: '5.3.18'
         //testImplementation group: 'com.tngtech.archunit', name: 'archunit-junit', version: '0.8.3'
         testImplementation 'org.assertj:assertj-core:3.24.2'
+        implementation "org.springframework.boot:spring-boot-starter-data-jpa:2.7.7"
     }
     test {
         useJUnitPlatform()
