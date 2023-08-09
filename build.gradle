@@ -37,7 +37,7 @@ subprojects {
         testImplementation "org.springframework:spring-test:$springVersion"
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
-        testImplementation "com.tngtech.archunit:archunit:$archUnitVersion"
+        //testImplementation "com.tngtech.archunit:archunit:$archUnitVersion"
 
         annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
         implementation "org.mapstruct:mapstruct:$mapstructVersion"
@@ -46,8 +46,7 @@ subprojects {
         implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.18'
         implementation group: 'org.springframework', name: 'spring-orm', version: '5.3.18'
         testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
-
-
+        testImplementation group: 'com.tngtech.archunit', name: 'archunit-junit', version: '0.8.3'
     }
     test {
         useJUnitPlatform()
