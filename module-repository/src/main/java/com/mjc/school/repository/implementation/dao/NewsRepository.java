@@ -9,6 +9,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Repository
 public class NewsRepository implements BaseRepository<NewsModel, Long> {
 
     CriteriaBuilder criteriaBuilder = HibernateUtil.getSessionFactory().getCriteriaBuilder();

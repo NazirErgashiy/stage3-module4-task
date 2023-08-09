@@ -7,11 +7,13 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Component
+@Repository
 public class TagRepository implements BaseRepository<TagModel, Long> {
     @Override
     public List<TagModel> readAll() {
