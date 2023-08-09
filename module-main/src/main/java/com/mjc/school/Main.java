@@ -6,16 +6,17 @@ import com.mjc.school.controller.TagControllerRequest;
 import com.mjc.school.controller.implementation.AuthorController;
 import com.mjc.school.controller.implementation.NewsController;
 import com.mjc.school.controller.implementation.TagController;
+import com.mjc.school.spring.SpringConfig;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.*;
 
+@SpringBootApplication
 public class Main {
 
     public static void main(String[] args) {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
         NewsController newsController = context.getBean("newsController", NewsController.class);
         AuthorController authorController = context.getBean("authorController", AuthorController.class);
         TagController tagController = context.getBean("tagController", TagController.class);
