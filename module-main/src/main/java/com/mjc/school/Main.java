@@ -8,14 +8,14 @@ import com.mjc.school.controller.implementation.NewsController;
 import com.mjc.school.controller.implementation.TagController;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.*;
 
-@ComponentScan
 public class Main {
 
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         NewsController newsController = context.getBean("newsController", NewsController.class);
         AuthorController authorController = context.getBean("authorController", AuthorController.class);
         TagController tagController = context.getBean("tagController", TagController.class);

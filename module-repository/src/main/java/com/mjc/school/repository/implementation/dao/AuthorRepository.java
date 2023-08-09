@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Component
 @Repository
 public class AuthorRepository implements BaseRepository<AuthorModel, Long> {
 
