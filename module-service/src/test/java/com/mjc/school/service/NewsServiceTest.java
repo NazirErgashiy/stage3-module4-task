@@ -1,6 +1,7 @@
-package com.mjc.school.service.impl;
+package com.mjc.school.service;
 
-import com.mjc.school.service.spring.ServiceConfig;
+import com.mjc.school.service.impl.AuthorService;
+import com.mjc.school.service.impl.NewsService;
 import com.mjc.school.service.dto.AuthorDto;
 import com.mjc.school.service.dto.NewsDto;
 import com.mjc.school.service.exceptions.AuthorNotFoundRuntimeException;
@@ -13,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = ServiceConfig.class)
+@SpringBootTest
 class NewsServiceTest {
     @Autowired
     private AuthorService authorService;

@@ -6,17 +6,27 @@ import com.mjc.school.controller.TagControllerRequest;
 import com.mjc.school.controller.implementation.AuthorController;
 import com.mjc.school.controller.implementation.NewsController;
 import com.mjc.school.controller.implementation.TagController;
-import com.mjc.school.spring.SpringConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
 public class Main {
 
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
+        ConfigurableApplicationContext context= SpringApplication.run(Main.class);
+
         NewsController newsController = context.getBean("newsController", NewsController.class);
         AuthorController authorController = context.getBean("authorController", AuthorController.class);
         TagController tagController = context.getBean("tagController", TagController.class);
@@ -58,7 +68,7 @@ public class Main {
         commandsMap.put(17, () -> String.valueOf(newsController.getTagsByNewsId((long) getUserInputAsInt("Input news id:", reader))));
         commandsMap.put(18, () -> String.valueOf(newsController.getNewsByParams(
                 getUserInputAsString("Input tag name: print - if null", reader),
-                getUserInputAsList("Input list of tags id: Example:1,2,3 print - if null)",reader),
+                getUserInputAsList("Input list of tags id: Example:1,2,3 print - if null)", reader),
                 getUserInputAsString("Input author name: print - if null", reader),
                 getUserInputAsString("Input news title: print - if null", reader),
                 getUserInputAsString("Input news content: print - if null", reader))));
