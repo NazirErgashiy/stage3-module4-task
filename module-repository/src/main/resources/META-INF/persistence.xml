@@ -13,6 +13,7 @@
     <class>com.mjc.school.repository.implementation.model.NewsModel</class>
     <class>com.mjc.school.repository.implementation.model.AuthorModel</class>
     <class>com.mjc.school.repository.implementation.model.TagModel</class>
+    <class>com.mjc.school.repository.implementation.model.CommentModel</class>
 
     <properties>
       <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/postgres"/>

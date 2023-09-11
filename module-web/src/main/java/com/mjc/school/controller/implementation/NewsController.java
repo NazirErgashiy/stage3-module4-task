@@ -1,79 +1,80 @@
 package com.mjc.school.controller.implementation;
 
-import com.mjc.school.controller.BaseController;
-import com.mjc.school.controller.NewsControllerRequest;
+import com.mjc.school.controller.NextGenController;
 import com.mjc.school.service.dto.AuthorDto;
 import com.mjc.school.service.dto.NewsDto;
 import com.mjc.school.service.dto.TagDto;
+import com.mjc.school.service.dto.update.NewsUpdateDto;
 import com.mjc.school.service.impl.NewsService;
-import com.mjc.school.service.requests.NewsRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Component
-@Controller
-public class NewsController implements BaseController<NewsControllerRequest, NewsDto, Long> {
-
-    @Autowired
-    public NewsController(NewsService SERVICE) {
-        this.SERVICE = SERVICE;
-    }
-
-    private NewsService SERVICE;
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/v1/news")
+public class NewsController implements NextGenController<NewsUpdateDto, NewsDto, Long> {
+    private final NewsService newsService;
 
     @Override
     public List<NewsDto> readAll() {
-        return SERVICE.readAll();
+        return newsService.readAll();
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<NewsDto> readAll(@RequestParam(required = false) Integer pageNumber,
+                                   @RequestParam(required = false, defaultValue = "3") Integer pageSize,
+                                   @RequestParam(required = false) String sortBy) {
+        return newsService.readAll(pageNumber, pageSize, sortBy);
     }
 
     @Override
-    public NewsDto readById(Long id) {
-        return SERVICE.readById(id);
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public NewsDto readById(@PathVariable Long id) {
+        return newsService.readById(id);
     }
 
     @Override
-    public NewsDto create(NewsControllerRequest createRequest) {
-        NewsRequest newsRequest = new NewsRequest();
-        newsRequest.setTitle(createRequest.getTitle());
-        newsRequest.setContent(createRequest.getContent());
-        if (createRequest.getAuthorId() == 0L)
-            createRequest.setAuthorId(null);
-        newsRequest.setAuthorId(createRequest.getAuthorId());
-        if (createRequest.getTagsId().get(0) == 0L)
-            createRequest.setTagsId(null);
-        newsRequest.setTagsId(createRequest.getTagsId());
-        return SERVICE.create(newsRequest);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public NewsDto create(@RequestBody @Validated NewsDto createRequest) {
+        return newsService.create(createRequest);
     }
 
     @Override
-    public NewsDto update(NewsControllerRequest updateRequest) {
-        NewsRequest newsRequest = new NewsRequest();
-        newsRequest.setId(updateRequest.getId());
-        newsRequest.setTitle(updateRequest.getTitle());
-        newsRequest.setContent(updateRequest.getContent());
-        if (updateRequest.getAuthorId() == 0L)
-            updateRequest.setAuthorId(null);
-        newsRequest.setAuthorId(updateRequest.getAuthorId());
-        if (updateRequest.getTagsId().get(0) == 0L)
-            updateRequest.setTagsId(null);
-        newsRequest.setTagsId(updateRequest.getTagsId());
-        return SERVICE.update(newsRequest);
+    @PatchMapping
+    @ResponseStatus(HttpStatus.OK)
+    public NewsDto update(@RequestBody @Validated NewsUpdateDto updateRequest) {
+        return newsService.update(updateRequest);
     }
 
     @Override
-    public boolean deleteById(Long id) {
-        return SERVICE.deleteById(id);
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public boolean deleteById(@PathVariable Long id) {
+        return newsService.deleteById(id);
     }
 
     public AuthorDto getAuthorByNewsId(Long id) {
-        return SERVICE.getAuthorByNewsId(id);
+        return newsService.getAuthorByNewsId(id);
     }
 
     public List<TagDto> getTagsByNewsId(Long id) {
-        return SERVICE.getTagsByNewsId(id);
+        return newsService.getTagsByNewsId(id);
     }
 
     public List<NewsDto> getNewsByParams(String tagNames, List<Long> tagIds, String authorName, String title, String content) {
@@ -87,10 +88,10 @@ public class NewsController implements BaseController<NewsControllerRequest, New
             title = null;
         if ("-".equals(content))
             content = null;
-        return SERVICE.getNewsByParams(tagNames, tagIds, authorName, title, content);
+        return newsService.getNewsByParams(tagNames, tagIds, authorName, title, content);
     }
 
     public void createTestDataBase() {
-        SERVICE.createTestDB();
+        newsService.createTestDB();
     }
 }

@@ -1,75 +1,78 @@
 package com.mjc.school.service.impl;
 
 import com.mjc.school.repository.implementation.dao.AuthorRepository;
-import com.mjc.school.service.BaseService;
+import com.mjc.school.repository.implementation.model.AuthorModel;
+import com.mjc.school.service.NextGenService;
 import com.mjc.school.service.dto.AuthorDto;
-import com.mjc.school.service.exceptions.AuthorNotFoundRuntimeException;
-import com.mjc.school.service.impl.validators.AuthorValidator;
+import com.mjc.school.service.dto.update.AuthorUpdateDto;
+import com.mjc.school.service.error.exceptions.NotFoundRuntimeException;
 import com.mjc.school.service.mapper.AuthorMapperImpl;
-import com.mjc.school.service.requests.AuthorRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component
 @Service
-public class AuthorService implements BaseService<AuthorRequest, AuthorDto, Long> {
+@RequiredArgsConstructor
+public class AuthorService implements NextGenService<AuthorUpdateDto, AuthorDto, Long> {
 
-    @Autowired
-    public AuthorService(AuthorRepository REPOSITORY, AuthorValidator authorValidator) {
-        this.REPOSITORY = REPOSITORY;
-        this.VALIDATOR = authorValidator;
-    }
+    private final AuthorRepository authorRepository;
+    private final AuthorMapperImpl authorMapper;
 
-    private AuthorRepository REPOSITORY;
-    private final AuthorMapperImpl MAPPER = new AuthorMapperImpl();
-    private AuthorValidator VALIDATOR;
-
+    @Transactional(readOnly = true)
     @Override
     public List<AuthorDto> readAll() {
-        return MAPPER.modelToDtoList(REPOSITORY.readAll());
+        return authorMapper.modelToDtoList(authorRepository.readAll());
     }
 
+    @Transactional(readOnly = true)
+    public List<AuthorDto> readAll(Integer pageNumber, Integer pageSize, String sortBy) {
+        List<AuthorModel> readResult = authorRepository.readAll(pageNumber, pageSize, sortBy);
+        return authorMapper.modelToDtoList(readResult);
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public AuthorDto readById(Long id) {
-        if (!REPOSITORY.existById(id)) {
-            throw new AuthorNotFoundRuntimeException("Author with id [" + id + "] not found");
+        if (!authorRepository.existById(id)) {
+            throw new NotFoundRuntimeException("Author with id [" + id + "] not found");
         }
-        return MAPPER.modelToDto(REPOSITORY.readById(id).get());
+        return authorMapper.modelToDto(authorRepository.readById(id).get());
     }
 
+    @Transactional
     @Override
-    public AuthorDto create(AuthorRequest request) {
-        if (VALIDATOR.validate(request)) {
-            AuthorDto dto = new AuthorDto();
-            dto.setName(request.getName());
-            return MAPPER.modelToDto(REPOSITORY.create(MAPPER.dtoToModel(dto)));
-        }
-        return null;
+    public AuthorDto create(AuthorDto createRequest) {
+        AuthorModel sourceAuthor = authorMapper.dtoToModel(createRequest);
+        AuthorModel newAuthor = authorRepository.create(sourceAuthor);
+        return authorMapper.modelToDto(newAuthor);
     }
 
+    @Transactional
     @Override
-    public AuthorDto update(AuthorRequest request) {
-        if (VALIDATOR.validate(request)) {
-            AuthorDto dto = new AuthorDto();
-            dto.setName(request.getName());
-            dto.setId(request.getId());
-            return MAPPER.modelToDto(REPOSITORY.update(MAPPER.dtoToModel(dto)));
+    public AuthorDto update(AuthorUpdateDto updateRequest) {
+        if (!authorRepository.existById(updateRequest.getId())) {
+            throw new NotFoundRuntimeException("Author with id [" + updateRequest.getId() + "] not found");
         }
-        return null;
+        AuthorModel sourceAuthor = authorMapper.toAuthor(updateRequest);
+        AuthorModel updatedAuthor = authorRepository.update(sourceAuthor);
+        return authorMapper.modelToDto(updatedAuthor);
     }
 
+    @Transactional
     @Override
     public boolean deleteById(Long id) {
-        return REPOSITORY.deleteById(id);
+        if (authorRepository.existById(id)) {
+            return authorRepository.deleteById(id);
+        }
+        throw new NotFoundRuntimeException("Author with id [" + id + "] not found");
     }
 
     private AuthorDto createSpecialAuthor(String name) {
-        AuthorRequest aReq1 = new AuthorRequest();
-        aReq1.setName(name);
-        return create(aReq1);
+        AuthorDto create = new AuthorDto();
+        create.setName(name);
+        return create(create);
     }
 
     public void createTestDB() {

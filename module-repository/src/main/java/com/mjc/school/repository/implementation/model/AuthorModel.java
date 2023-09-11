@@ -1,21 +1,29 @@
 package com.mjc.school.repository.implementation.model;
 
 import com.mjc.school.repository.model.BaseEntity;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
+import static com.mjc.school.repository.util.StandardTime.nowIso8601;
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Entity
 @Table(name = "author")
@@ -35,25 +43,19 @@ public class AuthorModel implements BaseEntity<Long> {
     @Column(name = "update_date")
     private LocalDateTime lastUpdatedDate;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,mappedBy = "author")
+    @OneToMany(cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.REFRESH, CascadeType.DETACH},
+            fetch = FetchType.LAZY, mappedBy = "author")
     private List<NewsModel> newsId;
 
     @PrePersist
-    protected void onCreate() {
-        lastUpdatedDate = createDate = nowIso8601();
-    }
-
     @PreUpdate
-    protected void onUpdate() {
+    public void prePersistOrUpdate() {
         lastUpdatedDate = nowIso8601();
-    }
-
-    private LocalDateTime nowIso8601() {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
-        df.setTimeZone(tz);
-        String nowAsISO = df.format(new Date());
-        return LocalDateTime.parse(nowAsISO, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'"));
+        if (createDate == null) {
+            createDate = lastUpdatedDate;
+        }
     }
 
     @Override

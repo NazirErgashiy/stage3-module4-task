@@ -1,6 +1,6 @@
 package com.mjc.school;
-/*
-import com.mjc.school.service.impl.NewsService;
+
+import com.mjc.school.controller.implementation.NewsController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class MainTest {
 
     @Autowired
-    private NewsService newsService;
+    private NewsController newsController;
 
     @Test
     void test() {
-        assertNotNull(newsService);
+        assertNotNull(newsController);
     }
-}*/
+}

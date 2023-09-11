@@ -1,28 +1,58 @@
 package com.mjc.school.repository.implementation.dao;
 
 import com.mjc.school.repository.BaseRepository;
-import com.mjc.school.repository.HibernateUtil;
 import com.mjc.school.repository.implementation.model.AuthorModel;
+import com.mjc.school.repository.util.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class AuthorRepository implements BaseRepository<AuthorModel, Long> {
 
+
+    public AuthorRepository() {
+        //Init Hibernate on startup
+        HibernateUtil.getSessionFactory();
+    }
+
     @Override
     public List<AuthorModel> readAll() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession();) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("from AuthorModel order by id asc", AuthorModel.class).list();
         } catch (HibernateException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<AuthorModel> readAll(Integer pageNumber, Integer pageSize, String sortBy) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            String hql = "from AuthorModel";
+            if (sortBy != null) {
+                hql += " order by " + sortBy;
+            }
+            Query query = session.createQuery(hql);
+            if (pageNumber != null) {
+                int firstResult = (pageNumber - 1) * pageSize;
+                query.setFirstResult(firstResult);
+                query.setMaxResults(pageSize);
+            }
+            List<AuthorModel> result = query.getResultList();
+            tx.commit();
+            session.close();
+            return result;
+        } catch (HibernateException exception) {
+            System.out.println(exception.getMessage());
+        }
+        throw new RuntimeException("Something wrong with Author readAll with paging");
     }
 
     @Override
@@ -66,7 +96,7 @@ public class AuthorRepository implements BaseRepository<AuthorModel, Long> {
 
     @Override
     public boolean deleteById(Long id) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession();) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             AuthorModel model = readById(id).get();
             session.delete(model);

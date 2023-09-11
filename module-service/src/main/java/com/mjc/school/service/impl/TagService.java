@@ -1,74 +1,79 @@
 package com.mjc.school.service.impl;
 
 import com.mjc.school.repository.implementation.dao.TagRepository;
-import com.mjc.school.service.BaseService;
+import com.mjc.school.repository.implementation.model.NewsModel;
+import com.mjc.school.repository.implementation.model.TagModel;
+import com.mjc.school.service.NextGenService;
+import com.mjc.school.service.dto.NewsDto;
 import com.mjc.school.service.dto.TagDto;
-import com.mjc.school.service.exceptions.AuthorNotFoundRuntimeException;
-import com.mjc.school.service.impl.validators.TagValidator;
+import com.mjc.school.service.dto.update.TagUpdateDto;
+import com.mjc.school.service.error.exceptions.NotFoundRuntimeException;
 import com.mjc.school.service.mapper.TagMapperImpl;
-import com.mjc.school.service.requests.TagRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component
+@RequiredArgsConstructor
 @Service
-public class TagService implements BaseService<TagRequest, TagDto, Long> {
+public class TagService implements NextGenService<TagUpdateDto, TagDto, Long> {
 
-    @Autowired
-    public TagService(TagRepository repository, TagValidator validator) {
-        REPOSITORY = repository;
-        VALIDATOR = validator;
-    }
-
-    private TagRepository REPOSITORY;
-    private TagValidator VALIDATOR;
-    private final TagMapperImpl MAPPER = new TagMapperImpl();
+    private final TagRepository tagRepository;
+    private final TagMapperImpl tagMapper;
 
 
+    @Transactional(readOnly = true)
     @Override
     public List<TagDto> readAll() {
-        return MAPPER.modelToDtoList(REPOSITORY.readAll());
+        return tagMapper.modelToDtoList(tagRepository.readAll());
     }
 
+    @Transactional(readOnly = true)
+    public List<TagDto> readAll(Integer pageNumber, Integer pageSize, String sortBy) {
+        List<TagModel> readResult = tagRepository.readAll(pageNumber, pageSize, sortBy);
+        return tagMapper.modelToDtoList(readResult);
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public TagDto readById(Long id) {
-        if (!REPOSITORY.existById(id)) {
-            throw new AuthorNotFoundRuntimeException("Tag with id [" + id + "] not found");
+        if (!tagRepository.existById(id)) {
+            throw new NotFoundRuntimeException("Tag with id [" + id + "] not found");
         }
-        return MAPPER.modelToDto(REPOSITORY.readById(id).get());
+        return tagMapper.modelToDto(tagRepository.readById(id).get());
     }
 
+    @Transactional
     @Override
-    public TagDto create(TagRequest createRequest) {
-        if (VALIDATOR.validate(createRequest)) {
-            TagDto dto = new TagDto();
-            dto.setName(createRequest.getName());
-            return MAPPER.modelToDto(REPOSITORY.create(MAPPER.dtoToModel(dto)));
-        }
-        return null;
+    public TagDto create(TagDto createRequest) {
+        TagModel sourceTag = tagMapper.dtoToModel(createRequest);
+        TagModel newTag = tagRepository.create(sourceTag);
+        return tagMapper.modelToDto(newTag);
     }
 
+    @Transactional
     @Override
-    public TagDto update(TagRequest updateRequest) {
-        if (VALIDATOR.validate(updateRequest)) {
-            TagDto dto = new TagDto();
-            dto.setName(updateRequest.getName());
-            dto.setId(updateRequest.getId());
-            return MAPPER.modelToDto(REPOSITORY.update(MAPPER.dtoToModel(dto)));
+    public TagDto update(TagUpdateDto updateRequest) {
+        if (!tagRepository.existById(updateRequest.getId())) {
+            throw new NotFoundRuntimeException("Tag with id [" + updateRequest.getId() + "] not found");
         }
-        return null;
+        TagModel sourceTag = tagMapper.toTag(updateRequest);
+        TagModel updatedTag = tagRepository.update(sourceTag);
+        return tagMapper.modelToDto(updatedTag);
     }
 
+    @Transactional
     @Override
     public boolean deleteById(Long id) {
-        return REPOSITORY.deleteById(id);
+        if (tagRepository.existById(id)) {
+            return tagRepository.deleteById(id);
+        }
+        throw new NotFoundRuntimeException("Tag with id [" + id + "] not found");
     }
 
     private TagDto createSpecialTag(String name) {
-        TagRequest aReq1 = new TagRequest();
+        TagDto aReq1 = new TagDto();
         aReq1.setName(name);
         return create(aReq1);
     }

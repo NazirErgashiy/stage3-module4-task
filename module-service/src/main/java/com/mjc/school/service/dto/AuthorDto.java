@@ -1,17 +1,29 @@
 package com.mjc.school.service.dto;
 
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.stereotype.Component;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
-@Component
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthorDto {
+
+    @Null(message = "Author id shouldn't be present")
     private Long id;
+
+    @Size(min = 3, max = 15, message = "Name length must be between 3 and 15")
     private String name;
+
+    @Null(message = "CreateDate shouldn't be populated")
     private LocalDateTime createDate;
+
+    @Null(message = "LastUpdatedDate shouldn't be populated")
     private LocalDateTime lastUpdatedDate;
-    //private List<NewsDto> newsId;
 }

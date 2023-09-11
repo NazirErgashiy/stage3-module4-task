@@ -1,152 +1,169 @@
 package com.mjc.school.service.impl;
 
+import com.mjc.school.repository.implementation.dao.AuthorRepository;
 import com.mjc.school.repository.implementation.dao.NewsRepository;
-import com.mjc.school.service.BaseService;
+import com.mjc.school.repository.implementation.dao.TagRepository;
+import com.mjc.school.repository.implementation.model.AuthorModel;
+import com.mjc.school.repository.implementation.model.CommentModel;
+import com.mjc.school.repository.implementation.model.NewsModel;
+import com.mjc.school.service.NextGenService;
 import com.mjc.school.service.dto.AuthorDto;
+import com.mjc.school.service.dto.CommentDto;
 import com.mjc.school.service.dto.NewsDto;
 import com.mjc.school.service.dto.TagDto;
-import com.mjc.school.service.exceptions.NewsNotFoundRuntimeException;
-import com.mjc.school.service.impl.validators.NewsValidator;
+import com.mjc.school.service.dto.update.NewsUpdateDto;
+import com.mjc.school.service.error.exceptions.NotFoundRuntimeException;
 import com.mjc.school.service.mapper.NewsMapperImpl;
-import com.mjc.school.service.requests.NewsRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
+@RequiredArgsConstructor
 @Component
-public class NewsService implements BaseService<NewsRequest, NewsDto, Long> {
+public class NewsService implements NextGenService<NewsUpdateDto, NewsDto, Long> {
 
-    @Autowired
-    public NewsService(NewsRepository newsRepository, NewsValidator newsValidator, TagService tagService, AuthorService authorService) {
-        REPOSITORY = newsRepository;
-        VALIDATOR = newsValidator;
-        TAG_SERVICE = tagService;
-        AUTHOR_SERVICE = authorService;
-    }
+    private final NewsRepository newsRepository;
+    private final NewsMapperImpl newsMapper;
+    private final AuthorService authorService;
+    private final AuthorRepository authorRepository;
+    private final TagService tagService;
+    private final TagRepository tagRepository;
 
-    private NewsRepository REPOSITORY;
-    private final NewsMapperImpl MAPPER = new NewsMapperImpl();
-    private NewsValidator VALIDATOR;
-    private TagService TAG_SERVICE;
-    private AuthorService AUTHOR_SERVICE;
-
+    @Transactional(readOnly = true)
     @Override
     public List<NewsDto> readAll() {
-        return MAPPER.modelToDtoList(REPOSITORY.readAll());
+        return newsMapper.modelToDtoList(newsRepository.readAll());
     }
 
+    @Transactional(readOnly = true)
+    public List<NewsDto> readAll(Integer pageNumber, Integer pageSize, String sortBy) {
+        List<NewsModel> readResult = newsRepository.readAll(pageNumber, pageSize, sortBy);
+        return newsMapper.modelToDtoList(readResult);
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public NewsDto readById(Long id) {
-        if (!REPOSITORY.existById(id)) {
-            throw new NewsNotFoundRuntimeException("News with id [" + id + "] not found");
+        if (!newsRepository.existById(id)) {
+            throw new NotFoundRuntimeException("News with id [" + id + "] not found");
         }
-        return MAPPER.modelToDto(REPOSITORY.readById(id).get());
+        return newsMapper.modelToDto(newsRepository.readById(id).get());
     }
 
+    @Transactional
     @Override
-    public NewsDto create(NewsRequest request) {
-        if (VALIDATOR.validate(request)) {
-            NewsDto dto = new NewsDto();
-            dto.setTitle(request.getTitle());
-            dto.setContent(request.getContent());
-            dto.setAuthor(AUTHOR_SERVICE.readById(request.getAuthorId()));
-
-            List<TagDto> tagDtos = new ArrayList<>();
-            if (request.getTagsId() != null)
-                for (int i = 0; i < request.getTagsId().size(); i++) {
-                    tagDtos.add(TAG_SERVICE.readById(request.getTagsId().get(i)));
-                }
-            dto.setTagsId(tagDtos);
-            //dto.setAuthorId(AUTHOR_SERVICE.readById(request.getAuthorId()));
-            return MAPPER.modelToDto(REPOSITORY.create(MAPPER.dtoToModel(dto)));
+    public NewsDto create(NewsDto createRequest) {
+        if (!authorRepository.existById(createRequest.getAuthorId())) {
+            throw new NotFoundRuntimeException("Author with id [" + createRequest.getAuthorId() + "] not found");
         }
-        return null;
+        if (createRequest.getTagsId() != null) {
+            List<Long> tagsId = createRequest.getTagsId();
+            for (int i = 0; i < tagsId.size(); i++) {
+                if (!tagRepository.existById(tagsId.get(i))) {
+                    throw new NotFoundRuntimeException("Tag with id [" + tagsId.get(i) + "] not found");
+                }
+            }
+        }
+        NewsModel sourceNews = newsMapper.dtoToModel(createRequest);
+        NewsModel newNews = newsRepository.create(sourceNews);
+        return newsMapper.modelToDto(newNews);
     }
 
+    @Transactional
     @Override
-    public NewsDto update(NewsRequest request) {
-        if (!REPOSITORY.existById(request.getId())) {
-            throw new NewsNotFoundRuntimeException("News with id [" + request.getId() + "] not found");
+    public NewsDto update(NewsUpdateDto updateRequest) {
+        if (!newsRepository.existById(updateRequest.getId())) {
+            throw new NotFoundRuntimeException("News with id [" + updateRequest.getId() + "] not found");
         }
+        NewsModel sourceNews = newsMapper.toNews(updateRequest);
 
-        if (VALIDATOR.validate(request)) {
-            NewsDto dto = new NewsDto();
-            dto.setId(request.getId());
-            dto.setTitle(request.getTitle());
-            dto.setContent(request.getContent());
+        AuthorModel authorModel=new AuthorModel();
+        authorModel.setId(readById(updateRequest.getId()).getAuthorId());
+        sourceNews.setAuthor(authorModel);
 
-            dto.setAuthor(AUTHOR_SERVICE.readById(request.getAuthorId()));
-            List<TagDto> tagDtos = new ArrayList<>();
-            if (request.getTagsId() != null)
-                for (int i = 0; i < request.getTagsId().size(); i++) {
-                    tagDtos.add(TAG_SERVICE.readById(request.getTagsId().get(i)));
-                }
-            dto.setTagsId(tagDtos);
-            //dto.setAuthorId(AUTHOR_SERVICE.readById(request.getAuthorId()));
-            return MAPPER.modelToDto(REPOSITORY.update(MAPPER.dtoToModel(dto)));
-        }
-        return null;
+        NewsModel updatedNews = newsRepository.update(sourceNews);
+        return newsMapper.modelToDto(updatedNews);
     }
 
+    @Transactional
     @Override
     public boolean deleteById(Long id) {
-        return REPOSITORY.deleteById(id);
+        if (newsRepository.existById(id)) {
+            return newsRepository.deleteById(id);
+        }
+        throw new NotFoundRuntimeException("News with id [" + id + "] not found");
     }
 
+    @Transactional(readOnly = true)
     public AuthorDto getAuthorByNewsId(Long id) {
-        return AUTHOR_SERVICE.readById(readById(id).getAuthor().getId());
+        return authorService.readById(readById(id).getId());
     }
 
+    @Transactional(readOnly = true)
     public List<TagDto> getTagsByNewsId(Long id) {
-        return readById(id).getTagsId();
+        List<TagDto> result = new ArrayList<>();
+
+        List<Long> tagsId = readById(id).getTagsId();
+        for (Long aLong : tagsId) {
+            result.add(tagService.readById(aLong));
+        }
+        return result;
     }
 
+    @Transactional(readOnly = true)
     public List<NewsDto> getNewsByParams(String tagNames, List<Long> tagIds, String authorName, String title, String content) {
-        return MAPPER.modelToDtoList(REPOSITORY.getNewsByParams(tagNames, tagIds, authorName, title, content));
+        return newsMapper.modelToDtoList(newsRepository.getNewsByParams(tagNames, tagIds, authorName, title, content));
     }
 
     public void createTestDB() {
-        List<Long> arr1 = new ArrayList<>();
-        arr1.add(1L);
-        arr1.add(2L);
+        List<Long> tagsList1 = new ArrayList<>();
+        tagsList1.add(1L);
+        tagsList1.add(2L);
 
-        List<Long> arr2 = new ArrayList<>();
-        arr2.add(4L);
-        arr2.add(5L);
-        arr2.add(7L);
+        List<Long> tagsList2 = new ArrayList<>();
+        tagsList2.add(4L);
+        tagsList2.add(5L);
+        tagsList2.add(7L);
 
-        createSpecialNews("Lord Of Dawn", "Now is the winter of our discontent", 1L, arr1);
-        createSpecialNews("Heir Of The Ancients", "Made glorious summer by this sun of York;", 1L, arr1);
-        createSpecialNews("Pirates Of The Ancestors", "And all the clouds that lour'd upon our house", 3L, arr2);
-        createSpecialNews("Rebels Of Earth", "In the deep bosom of the ocean buried.", 4L, arr1);
-        createSpecialNews("Kings And Mice", "Now are our brows bound with victorious wreaths;", 5L, new ArrayList<>());
-        createSpecialNews("Gods And Priests", "Our bruised arms hung up for monuments;", 6L, new ArrayList<>());
-        createSpecialNews("Goal Of The Lost Ones", "Our stern alarums changed to merry meetings,", 7L, new ArrayList<>());
-        createSpecialNews("End Of Nightmares", "Our dreadful marches to delightful measures.", 8L, new ArrayList<>());
-        createSpecialNews("Begging In The Future", "Grim-visaged war hath smooth'd his wrinkled front;", 9L, new ArrayList<>());
-        createSpecialNews("Flying Into The North", "I, that am curtail'd of this fair proportion,", 10L, new ArrayList<>());
-        createSpecialNews("Hero Of Dawn", "Creator Of Tomorrow", 11L, new ArrayList<>());
-        createSpecialNews("Human With Honor", "Priestess Without Desire", 12L, new ArrayList<>());
-        createSpecialNews("Strangers Of The Night", "Giants Of The Light", 13L, new ArrayList<>());
-        createSpecialNews("Officers With Vigor", "Boys Without Courage", 14L, new ArrayList<>());
-        createSpecialNews("Serpents And Companions", "Lords And Knights", 15L, new ArrayList<>());
-        createSpecialNews("Horses And Foreigners", "Wolves And Aliens", 16L, new ArrayList<>());
-        createSpecialNews("Cause Of Tomorrow", "Planet Of Water", 17L, new ArrayList<>());
-        createSpecialNews("Destiny Without Time", "Success Of The Void", 18L, new ArrayList<>());
-        createSpecialNews("Healing My Nightmares", "Clinging To The Future", 19L, new ArrayList<>());
-        createSpecialNews("Choking In Eternity", "Hurt By Nightmares", 20L, new ArrayList<>());
+        List<Long> commentsList = new ArrayList<>();
+        commentsList.add(1L);
+        commentsList.add(2L);
+        commentsList.add(3L);
+        commentsList.add(4L);
+
+        createSpecialNews("Lord Of Dawn", "Now is the winter of our discontent", 1L, tagsList1, commentsList);
+        createSpecialNews("Heir Of The Ancients", "Made glorious summer by this sun of York;", 1L, tagsList1, commentsList);
+        createSpecialNews("Pirates Of The Ancestors", "And all the clouds that lour'd upon our house", 3L, tagsList2, commentsList);
+        createSpecialNews("Rebels Of Earth", "In the deep bosom of the ocean buried.", 4L, tagsList1, new ArrayList<>());
+        createSpecialNews("Kings And Mice", "Now are our brows bound with victorious wreaths;", 5L, new ArrayList<>(), commentsList);
+        createSpecialNews("Gods And Priests", "Our bruised arms hung up for monuments;", 6L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Goal Of The Lost Ones", "Our stern alarums changed to merry meetings,", 7L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("End Of Nightmares", "Our dreadful marches to delightful measures.", 8L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Begging In The Future", "Grim-visaged war hath smooth'd his wrinkled front;", 9L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Flying Into The North", "I, that am curtail'd of this fair proportion,", 10L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Hero Of Dawn", "Creator Of Tomorrow", 11L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Human With Honor", "Priestess Without Desire", 12L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Strangers Of The Night", "Giants Of The Light", 13L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Officers With Vigor", "Boys Without Courage", 14L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Serpents And Companions", "Lords And Knights", 15L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Horses And Foreigners", "Wolves And Aliens", 16L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Cause Of Tomorrow", "Planet Of Water", 17L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Destiny Without Time", "Success Of The Void", 18L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Healing My Nightmares", "Clinging To The Future", 19L, new ArrayList<>(), new ArrayList<>());
+        createSpecialNews("Choking In Eternity", "Hurt By Nightmares", 20L, new ArrayList<>(), new ArrayList<>());
     }
 
-    private NewsDto createSpecialNews(String title, String content, Long authorId, List<Long> tags_id) {
-        NewsRequest request1 = new NewsRequest();
+    private NewsDto createSpecialNews(String title, String content, Long authorId, List<Long> tagsId, List<Long> commentsId) {
+        NewsDto request1 = new NewsDto();
         request1.setTitle(title);
         request1.setContent(content);
         request1.setAuthorId(authorId);
-        request1.setTagsId(tags_id);
+        request1.setTagsId(tagsId);
+        //request1.setCommentsId(commentsId);
         return create(request1);
     }
 }

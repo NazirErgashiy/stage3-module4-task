@@ -1,19 +1,21 @@
 package com.mjc.school.repository.implementation.dao;
 
 import com.mjc.school.repository.BaseRepository;
-import com.mjc.school.repository.HibernateUtil;
+import com.mjc.school.repository.implementation.model.NewsModel;
+import com.mjc.school.repository.util.HibernateUtil;
 import com.mjc.school.repository.implementation.model.TagModel;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class TagRepository implements BaseRepository<TagModel, Long> {
+
     @Override
     public List<TagModel> readAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -22,6 +24,30 @@ public class TagRepository implements BaseRepository<TagModel, Long> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<TagModel> readAll(Integer pageNumber, Integer pageSize, String sortBy) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            String hql = "from TagModel";
+            if (sortBy != null) {
+                hql += " order by " + sortBy;
+            }
+            Query query = session.createQuery(hql);
+            if (pageNumber != null) {
+                int firstResult = (pageNumber - 1) * pageSize;
+                query.setFirstResult(firstResult);
+                query.setMaxResults(pageSize);
+            }
+            List<TagModel> result = query.getResultList();
+            tx.commit();
+            session.close();
+            return result;
+        } catch (HibernateException exception) {
+            System.out.println(exception.getMessage());
+        }
+        throw new RuntimeException("Something wrong with News readAll with paging");
     }
 
     @Override

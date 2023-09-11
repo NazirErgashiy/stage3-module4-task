@@ -1,15 +1,21 @@
 package com.mjc.school.service.dto;
 
-import com.mjc.school.repository.implementation.model.NewsModel;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Data
-@Component
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TagDto {
+
+    @Null(message = "Tag id shouldn't be present")
     private Long id;
+
+    @Size(min = 3,max = 15,message = "Name length must be between 3 and 15")
     private String name;
-    //private List<NewsDto> newsId;
 }

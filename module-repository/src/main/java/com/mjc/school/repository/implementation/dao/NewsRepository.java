@@ -1,14 +1,14 @@
 package com.mjc.school.repository.implementation.dao;
 
 import com.mjc.school.repository.BaseRepository;
-import com.mjc.school.repository.HibernateUtil;
+import com.mjc.school.repository.implementation.model.CommentModel;
+import com.mjc.school.repository.util.HibernateUtil;
 import com.mjc.school.repository.implementation.model.AuthorModel;
 import com.mjc.school.repository.implementation.model.NewsModel;
 import com.mjc.school.repository.implementation.model.TagModel;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
@@ -17,15 +17,12 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class NewsRepository implements BaseRepository<NewsModel, Long> {
-
-    CriteriaBuilder criteriaBuilder = HibernateUtil.getSessionFactory().getCriteriaBuilder();
 
     @Override
     public List<NewsModel> readAll() {
@@ -34,7 +31,31 @@ public class NewsRepository implements BaseRepository<NewsModel, Long> {
         } catch (HibernateException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("Can't read data from DB");
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<NewsModel> readAll(Integer pageNumber, Integer pageSize, String sortBy) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            String hql = "from NewsModel";
+            if (sortBy != null) {
+                hql += " order by " + sortBy;
+            }
+            Query query = session.createQuery(hql);
+            if (pageNumber != null) {
+                int firstResult = (pageNumber - 1) * pageSize;
+                query.setFirstResult(firstResult);
+                query.setMaxResults(pageSize);
+            }
+            List<NewsModel> result = query.getResultList();
+            tx.commit();
+            session.close();
+            return result;
+        } catch (HibernateException exception) {
+            System.out.println(exception.getMessage());
+        }
+        throw new RuntimeException("Something wrong with News readAll with paging");
     }
 
     @Override
@@ -60,7 +81,10 @@ public class NewsRepository implements BaseRepository<NewsModel, Long> {
             if (tx != null) tx.rollback();
             e.printStackTrace();
         }
-        return readById(generatedId).get();
+        if (readById(generatedId).isPresent()) {
+            return readById(generatedId).get();
+        }
+        throw new RuntimeException("No entity");
     }
 
     @Override
@@ -76,9 +100,11 @@ public class NewsRepository implements BaseRepository<NewsModel, Long> {
             if (tx != null) tx.rollback();
             e.printStackTrace();
         }
-        return readById(entity.getId()).get();
+        if (readById(entity.getId()).isPresent()) {
+            return readById(entity.getId()).get();
+        }
+        throw new RuntimeException("No entity");
     }
-
 
     @Override
     public boolean deleteById(Long id) {
@@ -112,10 +138,12 @@ public class NewsRepository implements BaseRepository<NewsModel, Long> {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public List<NewsModel> getNewsByParams(String tagName, List<Long> tagIds, String authorName, String title, String content) {
         Session session = HibernateUtil.getSessionFactory().openSession();
 
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+
         CriteriaQuery<NewsModel> criteriaQuery = criteriaBuilder.createQuery(NewsModel.class);
         Root<NewsModel> root = criteriaQuery.from(NewsModel.class);
 

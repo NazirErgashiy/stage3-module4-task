@@ -1,12 +1,18 @@
 package com.mjc.school.repository.implementation.model;
 
 import com.mjc.school.repository.model.BaseEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Entity
 @Table(name = "tag")
@@ -20,11 +26,14 @@ public class TagModel implements BaseEntity<Long> {
     private String name;
 
     @ToString.Exclude
-    @ManyToMany(cascade = CascadeType.REFRESH,fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.REFRESH, CascadeType.DETACH},
+            fetch = FetchType.LAZY)
     @JoinTable(name = "news_tag",
             joinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "news_id", referencedColumnName = "id"))
-    private List<NewsModel> newsId;
+    private List<NewsModel> news;
 
     @Override
     public Long getId() {
