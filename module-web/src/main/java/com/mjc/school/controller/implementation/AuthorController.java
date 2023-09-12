@@ -1,5 +1,6 @@
 package com.mjc.school.controller.implementation;
 
+import com.mjc.school.controller.BaseController;
 import com.mjc.school.controller.NextGenController;
 import com.mjc.school.service.dto.AuthorDto;
 import com.mjc.school.service.dto.update.AuthorUpdateDto;
@@ -23,14 +24,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/v1/authors")
-public class AuthorController implements NextGenController<AuthorUpdateDto, AuthorDto, Long> {
+public class AuthorController implements BaseController<AuthorUpdateDto, AuthorDto, Long> {
 
     private final AuthorService authorService;
-
-    @Override
-    public List<AuthorDto> readAll() {
-        return authorService.readAll();
-    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -47,8 +43,6 @@ public class AuthorController implements NextGenController<AuthorUpdateDto, Auth
         return authorService.readById(id);
     }
 
-
-    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AuthorDto create(@RequestBody @Validated AuthorDto createRequest) {
@@ -67,6 +61,16 @@ public class AuthorController implements NextGenController<AuthorUpdateDto, Auth
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public boolean deleteById(@PathVariable Long id) {
         return authorService.deleteById(id);
+    }
+
+    @Override
+    public List<AuthorDto> readAll() {
+        return authorService.readAll();
+    }
+
+    @Override
+    public AuthorDto create(AuthorUpdateDto createRequest) {
+        throw new UnsupportedOperationException();
     }
 
     public void createTestDataBase() {

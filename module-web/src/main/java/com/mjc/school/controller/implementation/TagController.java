@@ -1,5 +1,6 @@
 package com.mjc.school.controller.implementation;
 
+import com.mjc.school.controller.BaseController;
 import com.mjc.school.controller.NextGenController;
 import com.mjc.school.service.dto.AuthorDto;
 import com.mjc.school.service.dto.TagDto;
@@ -24,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/tags")
-public class TagController implements NextGenController<TagUpdateDto, TagDto, Long> {
+public class TagController implements BaseController<TagUpdateDto, TagDto, Long> {
 
     private final TagService tagService;
 
@@ -36,8 +37,8 @@ public class TagController implements NextGenController<TagUpdateDto, TagDto, Lo
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<TagDto> readAll(@RequestParam(required = false) Integer pageNumber,
-                                   @RequestParam(required = false, defaultValue = "3") Integer pageSize,
-                                   @RequestParam(required = false) String sortBy) {
+                                @RequestParam(required = false, defaultValue = "3") Integer pageSize,
+                                @RequestParam(required = false) String sortBy) {
         return tagService.readAll(pageNumber, pageSize, sortBy);
     }
 
@@ -48,7 +49,6 @@ public class TagController implements NextGenController<TagUpdateDto, TagDto, Lo
         return tagService.readById(id);
     }
 
-    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TagDto create(@RequestBody @Validated TagDto createRequest) {
@@ -67,6 +67,11 @@ public class TagController implements NextGenController<TagUpdateDto, TagDto, Lo
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public boolean deleteById(@PathVariable Long id) {
         return tagService.deleteById(id);
+    }
+
+    @Override
+    public TagDto create(TagUpdateDto createRequest) {
+        throw new UnsupportedOperationException();
     }
 
     public void createTestDataBase() {

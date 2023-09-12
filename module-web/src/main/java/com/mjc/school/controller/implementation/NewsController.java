@@ -1,5 +1,6 @@
 package com.mjc.school.controller.implementation;
 
+import com.mjc.school.controller.BaseController;
 import com.mjc.school.controller.NextGenController;
 import com.mjc.school.service.dto.AuthorDto;
 import com.mjc.school.service.dto.NewsDto;
@@ -25,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/news")
-public class NewsController implements NextGenController<NewsUpdateDto, NewsDto, Long> {
+public class NewsController implements BaseController<NewsUpdateDto, NewsDto, Long> {
     private final NewsService newsService;
 
     @Override
@@ -36,8 +37,8 @@ public class NewsController implements NextGenController<NewsUpdateDto, NewsDto,
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<NewsDto> readAll(@RequestParam(required = false) Integer pageNumber,
-                                   @RequestParam(required = false, defaultValue = "3") Integer pageSize,
-                                   @RequestParam(required = false) String sortBy) {
+                                 @RequestParam(required = false, defaultValue = "3") Integer pageSize,
+                                 @RequestParam(required = false) String sortBy) {
         return newsService.readAll(pageNumber, pageSize, sortBy);
     }
 
@@ -48,7 +49,6 @@ public class NewsController implements NextGenController<NewsUpdateDto, NewsDto,
         return newsService.readById(id);
     }
 
-    @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public NewsDto create(@RequestBody @Validated NewsDto createRequest) {
@@ -69,6 +69,7 @@ public class NewsController implements NextGenController<NewsUpdateDto, NewsDto,
         return newsService.deleteById(id);
     }
 
+    //TODO SUPPORT THESE METHODS
     public AuthorDto getAuthorByNewsId(Long id) {
         return newsService.getAuthorByNewsId(id);
     }
@@ -89,6 +90,11 @@ public class NewsController implements NextGenController<NewsUpdateDto, NewsDto,
         if ("-".equals(content))
             content = null;
         return newsService.getNewsByParams(tagNames, tagIds, authorName, title, content);
+    }
+
+    @Override
+    public NewsDto create(NewsUpdateDto createRequest) {
+        throw new UnsupportedOperationException();
     }
 
     public void createTestDataBase() {

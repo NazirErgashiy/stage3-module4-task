@@ -1,5 +1,6 @@
 package com.mjc.school.controller.implementation;
 
+import com.mjc.school.controller.BaseController;
 import com.mjc.school.controller.ExtendedController;
 import com.mjc.school.controller.NextGenController;
 import com.mjc.school.service.dto.AuthorDto;
@@ -25,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/news/{id}/comments")
-public class CommentController implements ExtendedController<CommentUpdateDto, CommentDto, Long>, NextGenController<CommentUpdateDto, CommentDto, Long> {
+public class CommentController implements ExtendedController<CommentUpdateDto, CommentDto, Long>, BaseController<CommentUpdateDto, CommentDto, Long> {
 
     private final CommentService commentService;
 
@@ -37,8 +38,8 @@ public class CommentController implements ExtendedController<CommentUpdateDto, C
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CommentDto> readAll(@RequestParam(required = false) Integer pageNumber,
-                                   @RequestParam(required = false, defaultValue = "3") Integer pageSize,
-                                   @RequestParam(required = false) String sortBy) {
+                                    @RequestParam(required = false, defaultValue = "3") Integer pageSize,
+                                    @RequestParam(required = false) String sortBy) {
         return commentService.readAll(pageNumber, pageSize, sortBy);
     }
 
@@ -72,12 +73,12 @@ public class CommentController implements ExtendedController<CommentUpdateDto, C
     }
 
     @Override
-    public CommentDto create(CommentDto createRequest) {
+    public CommentDto update(CommentUpdateDto updateRequest) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public CommentDto update(CommentUpdateDto updateRequest) {
+    public CommentDto create(CommentUpdateDto createRequest) {
         throw new UnsupportedOperationException();
     }
 }
