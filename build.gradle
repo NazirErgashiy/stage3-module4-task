@@ -44,6 +44,9 @@ subprojects {
         testImplementation 'org.assertj:assertj-core:3.24.2'
         testImplementation "com.h2database:h2:2.2.220"
         implementation "com.h2database:h2:2.2.220"
+
+        testImplementation 'javax.servlet:javax.servlet-api:4.0.1'
+        implementation 'javax.servlet.jsp.jstl:jstl-api:1.2'
     }
     test {
         useJUnitPlatform()
