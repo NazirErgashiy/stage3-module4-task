@@ -63,5 +63,4 @@ public class CommentController implements ExtendedController<CommentUpdateDto, C
     public void deleteById(@PathVariable("comment-id") Long id) {
         commentService.deleteById(id);
     }
-
 }

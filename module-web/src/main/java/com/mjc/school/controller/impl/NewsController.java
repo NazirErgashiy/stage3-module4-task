@@ -77,6 +77,7 @@ public class NewsController implements NextGenController<NewsUpdateDto, NewsDto,
         return newsService.getTagsByNewsId(id);
     }
 
+    /*
     public List<NewsDto> getNewsByParams(String tagNames, List<Long> tagIds, String authorName, String title, String content) {
         if ("-".equals(tagNames))
             tagNames = null;
@@ -90,8 +91,5 @@ public class NewsController implements NextGenController<NewsUpdateDto, NewsDto,
             content = null;
         return newsService.getNewsByParams(tagNames, tagIds, authorName, title, content);
     }
-
-    public void createTestDataBase() {
-        newsService.createTestDB();
-    }
+    */
 }

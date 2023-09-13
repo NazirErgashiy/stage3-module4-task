@@ -63,8 +63,4 @@ public class TagController implements NextGenController<TagUpdateDto, TagDto, Lo
     public void deleteById(@PathVariable Long id) {
         tagService.deleteById(id);
     }
-
-    public void createTestDataBase() {
-        tagService.createTestDB();
-    }
 }

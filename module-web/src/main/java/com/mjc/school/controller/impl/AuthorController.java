@@ -62,8 +62,4 @@ public class AuthorController implements NextGenController<AuthorUpdateDto, Auth
     public void deleteById(@PathVariable Long id) {
         authorService.deleteById(id);
     }
-
-    public void createTestDataBase() {
-        authorService.createTestDB();
-    }
 }
