@@ -1,4 +1,4 @@
-package com.mjc.school.controller.implementation;
+package com.mjc.school.controller.impl;
 
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;

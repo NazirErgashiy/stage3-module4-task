@@ -1,9 +1,9 @@
-package com.mjc.school.controller.implementation;
+package com.mjc.school.controller.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mjc.school.controller.ControllerConfig;
-import com.mjc.school.service.dto.AuthorDto;
-import com.mjc.school.service.dto.update.AuthorUpdateDto;
+import com.mjc.school.service.dto.TagDto;
+import com.mjc.school.service.dto.update.TagUpdateDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @ContextConfiguration(initializers = IntegrationTestInitializer.class)
 @SpringBootTest(classes = ControllerConfig.class)
 @WebAppConfiguration
-class AuthorControllerTest {
+class TagControllerTest {
 
     private MockMvc mockMvc;
     @Autowired
@@ -34,18 +34,17 @@ class AuthorControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
     @BeforeEach
     public void createTestData() throws Exception {
         mockMvc = webAppContextSetup(webApplicationContext)
                 .build();
 
-        AuthorDto authorRequest = new AuthorDto();
+        TagDto tagRequest = new TagDto();
 
-        authorRequest.setName("someName");
-        mockMvc.perform(post("/api/v1/authors")
+        tagRequest.setName("someName");
+        mockMvc.perform(post("/api/v1/tags")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json(authorRequest)));
+                .content(json(tagRequest)));
     }
 
     @BeforeEach
@@ -59,16 +58,16 @@ class AuthorControllerTest {
      */
     @Test
     void create() throws Exception {
-        AuthorDto authorRequest = new AuthorDto();
-        authorRequest.setName("someName");
+        TagDto request = new TagDto();
+        request.setName("someName");
 
-        mockMvc.perform(post("/api/v1/authors")
+        mockMvc.perform(post("/api/v1/tags")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json(authorRequest))
+                        .content(json(request))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", notNullValue()))
-                .andExpect(jsonPath("$.name", is(authorRequest.getName())));
+                .andExpect(jsonPath("$.name", is(request.getName())));
     }
 
     /**
@@ -76,12 +75,12 @@ class AuthorControllerTest {
      */
     @Test
     void createAndGetExceptionTooShortName() throws Exception {
-        AuthorDto authorRequest = new AuthorDto();
-        authorRequest.setName("Na");
+        TagDto request = new TagDto();
+        request.setName("Na");
 
-        mockMvc.perform(post("/api/v1/authors")
+        mockMvc.perform(post("/api/v1/tags")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json(authorRequest))
+                .content(json(request))
         ).andExpect(status().isBadRequest());
     }
 
@@ -90,13 +89,13 @@ class AuthorControllerTest {
      */
     @Test
     void createAndGetExceptionIdShouldNotBeProvided() throws Exception {
-        AuthorDto authorRequest = new AuthorDto();
-        authorRequest.setId(123L);
-        authorRequest.setName("testName");
+        TagDto request = new TagDto();
+        request.setId(123L);
+        request.setName("testName");
 
-        mockMvc.perform(post("/api/v1/authors")
+        mockMvc.perform(post("/api/v1/tags")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json(authorRequest))
+                .content(json(request))
         ).andExpect(status().isBadRequest());
     }
 
@@ -105,7 +104,7 @@ class AuthorControllerTest {
      */
     @Test
     void readAll() throws Exception {
-        mockMvc.perform(get("/api/v1/authors"))
+        mockMvc.perform(get("/api/v1/tags"))
                 .andExpect(status().isOk());
     }
 
@@ -114,7 +113,7 @@ class AuthorControllerTest {
      */
     @Test
     void readAllWithPaging() throws Exception {
-        mockMvc.perform(get("/api/v1/authors?pageNumber=1&pageSize=2"))
+        mockMvc.perform(get("/api/v1/tags?pageNumber=1&pageSize=2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id", notNullValue()))
                 .andExpect(jsonPath("$.[0].name", notNullValue()))
@@ -127,7 +126,7 @@ class AuthorControllerTest {
      */
     @Test
     void readAllWithSorting() throws Exception {
-        mockMvc.perform(get("/api/v1/authors?sortBy=id asc"))
+        mockMvc.perform(get("/api/v1/tags?sortBy=id asc"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id", notNullValue()))
                 .andExpect(jsonPath("$.[0].name", notNullValue()))
@@ -140,7 +139,7 @@ class AuthorControllerTest {
      */
     @Test
     void readAllWithPagingAndSorting() throws Exception {
-        mockMvc.perform(get("/api/v1/authors?pageNumber=1&pageSize=5&sortBy=id asc"))
+        mockMvc.perform(get("/api/v1/tags?pageNumber=1&pageSize=5&sortBy=id asc"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id", notNullValue()))
                 .andExpect(jsonPath("$.[0].name", notNullValue()))
@@ -153,7 +152,7 @@ class AuthorControllerTest {
      */
     @Test
     void readById() throws Exception {
-        mockMvc.perform(get("/api/v1/authors/1"))
+        mockMvc.perform(get("/api/v1/tags/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("someName")));
@@ -164,7 +163,7 @@ class AuthorControllerTest {
      */
     @Test
     void readByIdAndGetNotFoundException() throws Exception {
-        mockMvc.perform(get("/api/v1/authors/535"))
+        mockMvc.perform(get("/api/v1/tags/535"))
                 .andExpect(status().isNotFound());
     }
 
@@ -173,12 +172,12 @@ class AuthorControllerTest {
      */
     @Test
     void update() throws Exception {
-        AuthorUpdateDto request = AuthorUpdateDto.builder()
+        TagUpdateDto request = TagUpdateDto.builder()
                 .id(1L)
                 .name("newName")
                 .build();
 
-        mockMvc.perform(patch("/api/v1/authors")
+        mockMvc.perform(patch("/api/v1/tags")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(request))
                 )
@@ -192,12 +191,12 @@ class AuthorControllerTest {
      */
     @Test
     void updateAndGetNotFoundException() throws Exception {
-        AuthorUpdateDto request = AuthorUpdateDto.builder()
+        TagUpdateDto request = TagUpdateDto.builder()
                 .id(535L)
                 .name("newName")
                 .build();
 
-        mockMvc.perform(patch("/api/v1/authors")
+        mockMvc.perform(patch("/api/v1/tags")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(request))
                 )
@@ -206,17 +205,18 @@ class AuthorControllerTest {
 
     @Test
     void deleteById() throws Exception {
-        mockMvc.perform(delete("/api/v1/authors/2"))
+        mockMvc.perform(delete("/api/v1/tags/1"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void deleteByIdAndGetNotFoundException() throws Exception {
-        mockMvc.perform(delete("/api/v1/authors/535"))
+        mockMvc.perform(delete("/api/v1/tags/535"))
                 .andExpect(status().isNotFound());
     }
 
     private String json(Object o) throws IOException {
         return objectMapper.writeValueAsString(o);
     }
+
 }

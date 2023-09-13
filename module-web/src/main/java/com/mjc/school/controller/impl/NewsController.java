@@ -1,7 +1,6 @@
-package com.mjc.school.controller.implementation;
+package com.mjc.school.controller.impl;
 
 import com.mjc.school.controller.BaseController;
-import com.mjc.school.controller.NextGenController;
 import com.mjc.school.service.dto.AuthorDto;
 import com.mjc.school.service.dto.NewsDto;
 import com.mjc.school.service.dto.TagDto;
@@ -70,11 +69,15 @@ public class NewsController implements BaseController<NewsUpdateDto, NewsDto, Lo
     }
 
     //TODO SUPPORT THESE METHODS
-    public AuthorDto getAuthorByNewsId(Long id) {
+    @GetMapping("/{id}/author")
+    @ResponseStatus(HttpStatus.OK)
+    public AuthorDto getAuthorByNewsId(@PathVariable Long id) {
         return newsService.getAuthorByNewsId(id);
     }
 
-    public List<TagDto> getTagsByNewsId(Long id) {
+    @GetMapping("/{id}/tag")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TagDto> getTagsByNewsId(@PathVariable Long id) {
         return newsService.getTagsByNewsId(id);
     }
 
