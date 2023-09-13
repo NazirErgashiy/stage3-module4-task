@@ -178,7 +178,7 @@ class AuthorControllerTest {
                 .name("newName")
                 .build();
 
-        mockMvc.perform(patch("/api/v1/authors")
+        mockMvc.perform(patch("/api/v1/authors/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(request))
                 )
@@ -197,7 +197,7 @@ class AuthorControllerTest {
                 .name("newName")
                 .build();
 
-        mockMvc.perform(patch("/api/v1/authors")
+        mockMvc.perform(patch("/api/v1/authors/535")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(request))
                 )

@@ -1,6 +1,6 @@
 package com.mjc.school.controller.impl;
 
-import com.mjc.school.controller.BaseController;
+import com.mjc.school.controller.NextGenController;
 import com.mjc.school.service.dto.AuthorDto;
 import com.mjc.school.service.dto.update.AuthorUpdateDto;
 import com.mjc.school.service.impl.AuthorService;
@@ -23,22 +23,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/v1/authors")
-public class AuthorController implements BaseController<AuthorUpdateDto, AuthorDto, Long> {
+public class AuthorController implements NextGenController<AuthorUpdateDto, AuthorDto, Long> {
 
     private final AuthorService authorService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<AuthorDto> readAll(@RequestParam(required = false) Integer pageNumber,
-                                   @RequestParam(required = false, defaultValue = "3") Integer pageSize,
-                                   @RequestParam(required = false) String sortBy) {
+    public List<AuthorDto> getAll(@RequestParam(required = false) Integer pageNumber,
+                                  @RequestParam(required = false, defaultValue = "3") Integer pageSize,
+                                  @RequestParam(required = false) String sortBy) {
         return authorService.readAll(pageNumber, pageSize, sortBy);
     }
 
     @Override
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public AuthorDto readById(@PathVariable Long id) {
+    public AuthorDto getById(@PathVariable Long id) {
         return authorService.readById(id);
     }
 
@@ -49,27 +49,18 @@ public class AuthorController implements BaseController<AuthorUpdateDto, AuthorD
     }
 
     @Override
-    @PatchMapping
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public AuthorDto update(@RequestBody @Validated AuthorUpdateDto updateRequest) {
+    public AuthorDto update(@PathVariable Long id, @RequestBody @Validated AuthorUpdateDto updateRequest) {
+        updateRequest.setId(id);
         return authorService.update(updateRequest);
     }
 
     @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public boolean deleteById(@PathVariable Long id) {
-        return authorService.deleteById(id);
-    }
-
-    @Override
-    public List<AuthorDto> readAll() {
-        return authorService.readAll();
-    }
-
-    @Override
-    public AuthorDto create(AuthorUpdateDto createRequest) {
-        throw new UnsupportedOperationException();
+    public void deleteById(@PathVariable Long id) {
+        authorService.deleteById(id);
     }
 
     public void createTestDataBase() {

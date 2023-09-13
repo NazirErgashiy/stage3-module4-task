@@ -1,8 +1,16 @@
 package com.mjc.school.controller;
 
+import java.util.List;
+
 public interface ExtendedController<T, R, K> {
 
-    R createExtended(K id, R createRequest);
+    List<R> getAll(Integer pageNumber, Integer pageSize, String sortBy);
 
-    R updateExtended(K id,T updateRequest);
+    R getById(K id);
+
+    R create(K id, R createRequest);
+
+    R update(K id,T updateRequest);
+
+    void deleteById(K id);
 }

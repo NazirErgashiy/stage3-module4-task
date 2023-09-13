@@ -1,16 +1,18 @@
 package com.mjc.school.controller;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 
 public interface NextGenController<T, R, K> {
 
-    List<R> readAll();
+    List<R> getAll(Integer pageNumber, Integer pageSize, String sortBy);
 
-    R readById(K id);
+    R getById(K id);
 
     R create(R createRequest);
 
-    R update(T updateRequest);
+    R update(K id, T updateRequest);
 
-    boolean deleteById(K id);
+    void deleteById(K id);
 }

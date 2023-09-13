@@ -1,6 +1,5 @@
 package com.mjc.school.controller.impl;
 
-import com.mjc.school.controller.BaseController;
 import com.mjc.school.controller.ExtendedController;
 import com.mjc.school.service.dto.CommentDto;
 import com.mjc.school.service.dto.update.CommentUpdateDto;
@@ -24,41 +23,36 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/news/{id}/comments")
-public class CommentController implements ExtendedController<CommentUpdateDto, CommentDto, Long>, BaseController<CommentUpdateDto, CommentDto, Long> {
+public class CommentController implements ExtendedController<CommentUpdateDto, CommentDto, Long> {
 
     private final CommentService commentService;
 
-    @Override
-    public List<CommentDto> readAll() {
-        return commentService.readAll();
-    }
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CommentDto> readAll(@RequestParam(required = false) Integer pageNumber,
-                                    @RequestParam(required = false, defaultValue = "3") Integer pageSize,
-                                    @RequestParam(required = false) String sortBy) {
+    public List<CommentDto> getAll(@RequestParam(required = false) Integer pageNumber,
+                                   @RequestParam(required = false, defaultValue = "3") Integer pageSize,
+                                   @RequestParam(required = false) String sortBy) {
         return commentService.readAll(pageNumber, pageSize, sortBy);
     }
 
     @Override
     @GetMapping("/{comment-id}")
     @ResponseStatus(HttpStatus.OK)
-    public CommentDto readById(@PathVariable("comment-id") Long id) {
+    public CommentDto getById(@PathVariable("comment-id") Long id) {
         return commentService.readById(id);
     }
 
     @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto createExtended(@PathVariable Long id, @RequestBody @Validated CommentDto createRequest) {
+    public CommentDto create(@PathVariable Long id, @RequestBody @Validated CommentDto createRequest) {
         return commentService.create(id, createRequest);
     }
 
     @Override
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
-    public CommentDto updateExtended(@PathVariable Long id, @RequestBody @Validated CommentUpdateDto updateRequest) {
+    public CommentDto update(@PathVariable Long id, @RequestBody @Validated CommentUpdateDto updateRequest) {
         updateRequest.setNewsId(id);
         return commentService.update(updateRequest);
     }
@@ -66,17 +60,8 @@ public class CommentController implements ExtendedController<CommentUpdateDto, C
     @Override
     @DeleteMapping("/{comment-id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public boolean deleteById(@PathVariable("comment-id") Long id) {
-        return commentService.deleteById(id);
+    public void deleteById(@PathVariable("comment-id") Long id) {
+        commentService.deleteById(id);
     }
 
-    @Override
-    public CommentDto update(CommentUpdateDto updateRequest) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public CommentDto create(CommentUpdateDto createRequest) {
-        throw new UnsupportedOperationException();
-    }
 }

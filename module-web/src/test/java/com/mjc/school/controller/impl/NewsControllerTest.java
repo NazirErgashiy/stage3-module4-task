@@ -239,7 +239,7 @@ class NewsControllerTest {
                 .content("newContent")
                 .build();
 
-        mockMvc.perform(patch("/api/v1/news")
+        mockMvc.perform(patch("/api/v1/news/3")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(request))
                 )
@@ -259,7 +259,7 @@ class NewsControllerTest {
                 .name("newName")
                 .build();
 
-        mockMvc.perform(patch("/api/v1/news")
+        mockMvc.perform(patch("/api/v1/news/535")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(request))
                 )

@@ -1,6 +1,7 @@
 package com.mjc.school.controller.impl;
 
 import com.mjc.school.controller.BaseController;
+import com.mjc.school.controller.NextGenController;
 import com.mjc.school.service.dto.AuthorDto;
 import com.mjc.school.service.dto.NewsDto;
 import com.mjc.school.service.dto.TagDto;
@@ -25,26 +26,21 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/news")
-public class NewsController implements BaseController<NewsUpdateDto, NewsDto, Long> {
+public class NewsController implements NextGenController<NewsUpdateDto, NewsDto, Long> {
     private final NewsService newsService;
-
-    @Override
-    public List<NewsDto> readAll() {
-        return newsService.readAll();
-    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<NewsDto> readAll(@RequestParam(required = false) Integer pageNumber,
-                                 @RequestParam(required = false, defaultValue = "3") Integer pageSize,
-                                 @RequestParam(required = false) String sortBy) {
+    public List<NewsDto> getAll(@RequestParam(required = false) Integer pageNumber,
+                                @RequestParam(required = false, defaultValue = "3") Integer pageSize,
+                                @RequestParam(required = false) String sortBy) {
         return newsService.readAll(pageNumber, pageSize, sortBy);
     }
 
     @Override
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public NewsDto readById(@PathVariable Long id) {
+    public NewsDto getById(@PathVariable Long id) {
         return newsService.readById(id);
     }
 
@@ -55,20 +51,20 @@ public class NewsController implements BaseController<NewsUpdateDto, NewsDto, Lo
     }
 
     @Override
-    @PatchMapping
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public NewsDto update(@RequestBody @Validated NewsUpdateDto updateRequest) {
+    public NewsDto update(@PathVariable Long id,@RequestBody @Validated NewsUpdateDto updateRequest) {
+        updateRequest.setId(id);
         return newsService.update(updateRequest);
     }
 
     @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public boolean deleteById(@PathVariable Long id) {
-        return newsService.deleteById(id);
+    public void deleteById(@PathVariable Long id) {
+        newsService.deleteById(id);
     }
 
-    //TODO SUPPORT THESE METHODS
     @GetMapping("/{id}/author")
     @ResponseStatus(HttpStatus.OK)
     public AuthorDto getAuthorByNewsId(@PathVariable Long id) {
@@ -93,11 +89,6 @@ public class NewsController implements BaseController<NewsUpdateDto, NewsDto, Lo
         if ("-".equals(content))
             content = null;
         return newsService.getNewsByParams(tagNames, tagIds, authorName, title, content);
-    }
-
-    @Override
-    public NewsDto create(NewsUpdateDto createRequest) {
-        throw new UnsupportedOperationException();
     }
 
     public void createTestDataBase() {

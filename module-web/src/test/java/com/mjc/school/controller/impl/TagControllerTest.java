@@ -177,7 +177,7 @@ class TagControllerTest {
                 .name("newName")
                 .build();
 
-        mockMvc.perform(patch("/api/v1/tags")
+        mockMvc.perform(patch("/api/v1/tags/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(request))
                 )
@@ -196,7 +196,7 @@ class TagControllerTest {
                 .name("newName")
                 .build();
 
-        mockMvc.perform(patch("/api/v1/tags")
+        mockMvc.perform(patch("/api/v1/tags/535")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(request))
                 )
