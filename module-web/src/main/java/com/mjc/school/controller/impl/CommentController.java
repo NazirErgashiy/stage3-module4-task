@@ -1,6 +1,6 @@
 package com.mjc.school.controller.impl;
 
-import com.mjc.school.controller.ExtendedController;
+import com.mjc.school.controller.NextGenController;
 import com.mjc.school.service.dto.CommentDto;
 import com.mjc.school.service.dto.update.CommentUpdateDto;
 import com.mjc.school.service.impl.CommentService;
@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/news/{id}/comments")
-public class CommentController implements ExtendedController<CommentUpdateDto, CommentDto, Long> {
+public class CommentController implements NextGenController<CommentUpdateDto, CommentDto, Long> {
 
     private final CommentService commentService;
 
@@ -45,8 +45,8 @@ public class CommentController implements ExtendedController<CommentUpdateDto, C
     @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto create(@PathVariable Long id, @RequestBody @Validated CommentDto createRequest) {
-        return commentService.create(id, createRequest);
+    public CommentDto create(@RequestBody @Validated CommentDto createRequest) {
+        return commentService.create(createRequest);
     }
 
     @Override

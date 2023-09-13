@@ -1,5 +1,6 @@
 package com.mjc.school.service.dto;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,6 @@ public class CommentDto {
     @Null(message = "LastUpdatedDate shouldn't be populated")
     private LocalDateTime lastUpdatedDate;
 
-    @Null(message = "News id shouldn't be present")
+    @NotNull(message = "News id should be present")
     private Long newsId;
 }

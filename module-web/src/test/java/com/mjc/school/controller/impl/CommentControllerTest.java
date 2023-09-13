@@ -84,6 +84,7 @@ class CommentControllerTest {
 
         CommentDto newsRequest = CommentDto.builder()
                 .content("someComment")
+                .newsId(1L)
                 .build();
 
         mockMvc.perform(post("/api/v1/news/1/comments")
@@ -107,6 +108,7 @@ class CommentControllerTest {
     void create() throws Exception {
         CommentDto request = new CommentDto();
         request.setContent("someContent");
+        request.setNewsId(1L);
 
         mockMvc.perform(post("/api/v1/news/1/comments")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -165,7 +167,7 @@ class CommentControllerTest {
         mockMvc.perform(post("/api/v1/news/1/comments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json(request))
-        ).andExpect(status().isBadRequest());
+        ).andExpect(status().isNotFound());
     }
 
     /**
